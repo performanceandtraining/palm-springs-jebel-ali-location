@@ -48,7 +48,8 @@ function location(){heading(D.project,D.area);notes(app,[D.intro]);const tabs=el
  }
  document.addEventListener('fullscreenchange',syncFullscreen);
  shell.addEventListener('keydown',e=>{if(!isFullscreen())return;if(e.key==='Escape'){e.preventDefault();if(fallbackFullscreen)exitFallback();else document.exitFullscreen();}if(fallbackFullscreen&&e.key==='Tab'){const focusable=[...shell.querySelectorAll('button,a[href],[tabindex="0"]')].filter(n=>n.getClientRects().length);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
- new ResizeObserver(resizeMap).observe(mapbox);
+ let initialViewReady=false;
+ new ResizeObserver(()=>{resizeMap();if(!initialViewReady&&mapbox.clientWidth>0&&mapbox.clientHeight>0){initialViewReady=true;map.invalidateSize({pan:false});map.fitBounds(areaLayer.getBounds(),{padding:[25,25]});}}).observe(mapbox);
  const areaLayer=L.geoJSON(D.boundary,{style:{color:'#3188c9',weight:2,fillColor:'#4baaf4',fillOpacity:.06}}).addTo(map);map.fitBounds(areaLayer.getBounds(),{padding:[25,25]});
  const projectLayer=L.geoJSON(D.project_boundary,{style:{color:'#236b58',weight:3,dashArray:'7 4',fillColor:'#70ad95',fillOpacity:.2}}).addTo(map);
  projectLayer.bindTooltip(el('span','Palm Springs (approx.)'),{permanent:true,direction:'center',className:'project-boundary-label',interactive:false});
